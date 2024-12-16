@@ -1,4 +1,4 @@
-import { DoctorSearch } from "@/components/DoctorSearch";
+import DoctorSearch from "@/components/DoctorSearch";
 
 const DoctorSearchPage = () => {
   return (
