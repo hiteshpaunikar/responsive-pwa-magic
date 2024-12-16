@@ -11,12 +11,123 @@
     <link rel="manifest" href="/manifest.json" />
     <link rel="icon" type="image/png" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
     <link rel="apple-touch-icon" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      .card-hover {
+        transition: all 0.3s;
+      }
+      .card-hover:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+      .glass {
+        backdrop-filter: blur(16px);
+        background: rgba(255, 255, 255, 0.3);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+    </style>
   </head>
 
-  <body>
-    <div id="root"></div>
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script type="module" src="/src/main.tsx"></script>
+  <body class="min-h-screen bg-gradient-to-b from-[#1a237e] to-[#3949ab]">
+    <header class="p-4 text-white">
+      <h1 class="text-xl md:text-2xl font-bold mb-1">Indian Space Research Organisation</h1>
+      <h2 class="text-lg md:text-xl">Space Applications Centre</h2>
+      <p class="text-sm md:text-base">Ahmedabad-380015</p>
+    </header>
+
+    <main class="container mx-auto px-4 py-8">
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <!-- Menu Items -->
+        <a href="/doctors.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Doctor List" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Doctor List</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/guest-house.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Guest House" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Guest House</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/ward-charges.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Ward Charges" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Ward Charges</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/supplementary.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Supplementary Item" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Supplementary Item</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/inadmissible.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Inadmissible Items" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Inadmissible Items</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/telephone.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Imp. Telephone Number" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Imp. Telephone Number</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/holidays.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="Holiday List" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">Holiday List</h3>
+            </div>
+          </div>
+        </a>
+
+        <a href="/about.html" class="card-hover">
+          <div class="p-4 text-center cursor-pointer bg-white/90 backdrop-blur-sm rounded-lg">
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                <img src="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" alt="About" class="w-full h-full object-contain">
+              </div>
+              <h3 class="text-sm md:text-base font-medium text-gray-800">About</h3>
+            </div>
+          </div>
+        </a>
+      </div>
+    </main>
+
     <script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
