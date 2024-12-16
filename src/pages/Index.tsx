@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import DoctorSearch from "@/components/DoctorSearch";
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 
 const menuItems = [
@@ -15,7 +15,7 @@ const menuItems = [
 ];
 
 const Index = () => {
-  const [showDoctorSearch, setShowDoctorSearch] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#1a237e] to-[#3949ab]">
@@ -33,7 +33,7 @@ const Index = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
-              onClick={() => item.title === "Doctor List" && setShowDoctorSearch(true)}
+              onClick={() => navigate(item.path)}
             >
               <Card className="p-4 text-center cursor-pointer hover:shadow-lg transition-all bg-white/90 backdrop-blur-sm">
                 <div className="flex flex-col items-center gap-2">
@@ -46,16 +46,6 @@ const Index = () => {
             </motion.div>
           ))}
         </div>
-
-        {showDoctorSearch && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="mt-8"
-          >
-            <DoctorSearch />
-          </motion.div>
-        )}
       </main>
     </div>
   );
