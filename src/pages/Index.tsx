@@ -1,108 +1,62 @@
 import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import DoctorSearch from "@/components/DoctorSearch";
+import { useState } from "react";
 
-const fadeInUp = {
-  initial: { opacity: 0, y: 20 },
-  animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.5 }
-};
+const menuItems = [
+  { title: "Doctor List", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/doctors" },
+  { title: "Guest House", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/guest-house" },
+  { title: "Ward Charges", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/ward-charges" },
+  { title: "Supplementary Item", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/supplementary" },
+  { title: "Inadmissible Items", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/inadmissible" },
+  { title: "Imp. Telephone Number", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/telephone" },
+  { title: "Holiday List", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/holidays" },
+  { title: "About", icon: "/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png", path: "/about" },
+];
 
 const Index = () => {
+  const [showDoctorSearch, setShowDoctorSearch] = useState(false);
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-soft-purple to-soft-peach">
-      {/* Hero Section */}
-      <section className="relative h-screen flex items-center justify-center px-4">
-        <div className="absolute inset-0 bg-[url('/placeholder.svg')] bg-cover bg-center opacity-10" />
-        <div className="container mx-auto max-w-6xl">
-          <motion.div 
-            className="text-center space-y-6"
+    <div className="min-h-screen bg-gradient-to-b from-[#1a237e] to-[#3949ab]">
+      <header className="p-4 text-white">
+        <h1 className="text-xl md:text-2xl font-bold mb-1">Indian Space Research Organisation</h1>
+        <h2 className="text-lg md:text-xl">Space Applications Centre</h2>
+        <p className="text-sm md:text-base">Ahmedabad-380015</p>
+      </header>
+
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {menuItems.map((item, index) => (
+            <motion.div
+              key={item.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+              onClick={() => item.title === "Doctor List" && setShowDoctorSearch(true)}
+            >
+              <Card className="p-4 text-center cursor-pointer hover:shadow-lg transition-all bg-white/90 backdrop-blur-sm">
+                <div className="flex flex-col items-center gap-2">
+                  <div className="w-16 h-16 md:w-20 md:h-20 flex items-center justify-center">
+                    <img src={item.icon} alt={item.title} className="w-full h-full object-contain" />
+                  </div>
+                  <h3 className="text-sm md:text-base font-medium text-gray-800">{item.title}</h3>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+
+        {showDoctorSearch && (
+          <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+            className="mt-8"
           >
-            <span className="inline-block px-3 py-1 text-sm bg-white/20 backdrop-blur-sm rounded-full text-gray-800 mb-4">
-              Welcome to the future
-            </span>
-            <h1 className="text-4xl md:text-6xl font-bold text-gray-900 text-balance">
-              Create something beautiful
-            </h1>
-            <p className="text-lg md:text-xl text-gray-700 max-w-2xl mx-auto text-balance">
-              Design and build with precision and elegance
-            </p>
-            <div className="flex gap-4 justify-center mt-8">
-              <Button size="lg" className="glass hover:bg-white/40">
-                Get Started
-              </Button>
-              <Button size="lg" variant="outline" className="glass">
-                Learn More
-              </Button>
-            </div>
+            <DoctorSearch />
           </motion.div>
-        </div>
-      </section>
-
-      {/* Features Section */}
-      <section className="py-24 px-4">
-        <div className="container mx-auto max-w-6xl">
-          <motion.div 
-            className="text-center mb-16"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
-          >
-            <span className="inline-block px-3 py-1 text-sm bg-white/20 backdrop-blur-sm rounded-full text-gray-800 mb-4">
-              Features
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 text-balance">
-              Crafted with attention to detail
-            </h2>
-            <p className="text-lg text-gray-700 max-w-2xl mx-auto text-balance">
-              Every pixel and interaction has been carefully considered
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[1, 2, 3].map((i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-              >
-                <Card className="p-6 glass card-hover">
-                  <div className="h-12 w-12 rounded-full bg-white/30 backdrop-blur-sm mb-4 flex items-center justify-center">
-                    {i}
-                  </div>
-                  <h3 className="text-xl font-semibold mb-2">Feature {i}</h3>
-                  <p className="text-gray-700">
-                    Discover how our thoughtfully designed features can enhance your experience
-                  </p>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="py-12 px-4 bg-white/10 backdrop-blur-sm">
-        <div className="container mx-auto max-w-6xl">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div className="space-y-4">
-              <h4 className="font-semibold">Company</h4>
-              <ul className="space-y-2">
-                <li><a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">About</a></li>
-                <li><a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">Careers</a></li>
-                <li><a href="#" className="text-gray-700 hover:text-gray-900 transition-colors">Contact</a></li>
-              </ul>
-            </div>
-            {/* Repeat for other footer sections */}
-          </div>
-        </div>
-      </footer>
+        )}
+      </main>
     </div>
   );
 };
