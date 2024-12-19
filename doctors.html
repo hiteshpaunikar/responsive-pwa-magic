@@ -17,6 +17,29 @@
         background: linear-gradient(to bottom, #1a237e, #3949ab);
         padding: 2rem 0;
       }
+      .search-container {
+        position: relative;
+      }
+      .voice-btn {
+        position: absolute;
+        right: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        background: none;
+        border: none;
+        color: #666;
+      }
+      .voice-btn:hover {
+        color: #333;
+      }
+      .listening {
+        animation: pulse 1.5s infinite;
+      }
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
     </style>
   </head>
 
@@ -28,67 +51,155 @@
       
       <div class="card shadow-lg mx-auto" style="max-width: 768px;">
         <div class="card-body">
-          <div class="mb-4">
-            <input 
-              type="text" 
-              id="searchInput"
-              placeholder="Search by name or specialization..."
-              class="form-control"
-            >
+          <div class="row mb-4">
+            <div class="col-md-6">
+              <div class="search-container">
+                <input 
+                  type="text" 
+                  id="searchInput"
+                  placeholder="Search doctors..."
+                  class="form-control"
+                >
+                <button class="voice-btn" id="voiceSearchBtn">
+                  <i class="bi bi-mic-fill"></i>
+                </button>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <select id="filterSelect" class="form-select">
+                <option value="all">All Categories</option>
+                <option value="DOCTORNAME">Doctor Name</option>
+                <option value="DOCTORTYPE">Doctor Type</option>
+                <option value="MEDICINETYPE">Medicine Type</option>
+              </select>
+            </div>
           </div>
 
           <div id="doctorsList" class="d-flex flex-column gap-3">
-            <!-- Doctor cards will be inserted here by JavaScript -->
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      // Sample doctors data - in a real app, this would come from an API
-      const doctors = [
-        {
-          name: "Dr. Sharma",
-          specialization: "Cardiology",
-          availability: "Mon-Fri, 9AM-5PM",
-          contact: "+91 1234567890"
-        },
-        {
-          name: "Dr. Patel",
-          specialization: "General Medicine",
-          availability: "Mon-Sat, 10AM-6PM",
-          contact: "+91 9876543210"
+      let doctors = [];
+      let recognition = null;
+
+      // Initialize speech recognition
+      if ('webkitSpeechRecognition' in window) {
+        recognition = new webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
+        recognition.lang = 'en-US';
+
+        recognition.onresult = function(event) {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById('searchInput').value = transcript;
+          filterDoctors();
+          voiceSearchBtn.classList.remove('listening');
+        };
+
+        recognition.onerror = function(event) {
+          console.error('Speech recognition error:', event.error);
+          voiceSearchBtn.classList.remove('listening');
+        };
+      }
+
+      // Voice search button handler
+      const voiceSearchBtn = document.getElementById('voiceSearchBtn');
+      voiceSearchBtn.addEventListener('click', () => {
+        if (recognition) {
+          recognition.start();
+          voiceSearchBtn.classList.add('listening');
+        } else {
+          alert('Speech recognition is not supported in your browser.');
         }
-      ];
+      });
+
+      // Fetch and render doctors
+      async function fetchDoctors() {
+        try {
+          const response = await fetch('https://www.sac.gov.in/Ansh/DoctorsData.xml');
+          const xmlText = await response.text();
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(xmlText, 'text/xml');
+          
+          const entries = xmlDoc.getElementsByTagName('entry');
+          doctors = Array.from(entries).map(entry => {
+            const doctor = {};
+            Array.from(entry.children).forEach(child => {
+              doctor[child.tagName] = child.textContent;
+            });
+            return doctor;
+          });
+          
+          renderDoctors(doctors);
+        } catch (error) {
+          console.error('Error fetching doctors:', error);
+          document.getElementById('doctorsList').innerHTML = `
+            <div class="alert alert-danger" role="alert">
+              Error loading doctors. Please try again later.
+            </div>
+          `;
+        }
+      }
 
       function renderDoctors(doctorsToRender) {
         const doctorsList = document.getElementById('doctorsList');
+        if (doctorsToRender.length === 0) {
+          doctorsList.innerHTML = `
+            <div class="alert alert-info" role="alert">
+              No doctors found matching your search criteria.
+            </div>
+          `;
+          return;
+        }
+
         doctorsList.innerHTML = doctorsToRender.map(doctor => `
-          <div class="card bg-light">
+          <div class="card">
             <div class="card-body">
-              <h3 class="h5 mb-2">${doctor.name}</h3>
-              <p class="text-muted mb-1">${doctor.specialization}</p>
-              <p class="small text-muted mb-1">${doctor.availability}</p>
-              <p class="small text-muted mb-0">${doctor.contact}</p>
+              <h3 class="h5 mb-2">${doctor.DOCTORNAME || 'N/A'}</h3>
+              <p class="mb-1"><strong>Type:</strong> ${doctor.DOCTORTYPE || 'N/A'}</p>
+              <p class="mb-1"><strong>Medicine:</strong> ${doctor.MEDICINETYPE || 'N/A'}</p>
+              <p class="mb-1"><strong>Timings:</strong> ${doctor.TIMINGS || 'N/A'}</p>
+              <p class="mb-1"><strong>Phone:</strong> ${doctor.PHONENO || 'N/A'}</p>
+              <p class="mb-0"><strong>Address:</strong> ${doctor.ADDRESS || 'N/A'}</p>
             </div>
           </div>
         `).join('');
       }
 
-      // Initial render
-      renderDoctors(doctors);
+      function filterDoctors() {
+        const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+        const filterType = document.getElementById('filterSelect').value;
+        
+        const filtered = doctors.filter(doctor => {
+          if (filterType === 'all') {
+            return Object.values(doctor).some(value => 
+              value && value.toLowerCase().includes(searchTerm)
+            );
+          }
+          return doctor[filterType] && 
+                 doctor[filterType].toLowerCase().includes(searchTerm);
+        });
+        
+        renderDoctors(filtered);
+      }
 
-      // Search functionality
-      document.getElementById('searchInput').addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const filteredDoctors = doctors.filter(doctor => 
-          doctor.name.toLowerCase().includes(searchTerm) ||
-          doctor.specialization.toLowerCase().includes(searchTerm)
-        );
-        renderDoctors(filteredDoctors);
-      });
+      // Event listeners
+      document.getElementById('searchInput').addEventListener('input', filterDoctors);
+      document.getElementById('filterSelect').addEventListener('change', filterDoctors);
+
+      // Initial fetch
+      fetchDoctors();
     </script>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
       if ('serviceWorker' in navigator) {
