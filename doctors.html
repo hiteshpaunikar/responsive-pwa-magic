@@ -3,85 +3,41 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Find a Doctor - ISRO SAC</title>
-    <meta name="description" content="Search for doctors at ISRO Space Applications Centre" />
-    <meta name="author" content="ISRO SAC" />
-    <meta name="theme-color" content="#1a237e" />
-    <link rel="manifest" href="/manifest.json" />
-    <link rel="icon" type="image/png" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
-    <link rel="apple-touch-icon" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
+    <title>Doctor List - ISRO SAC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-      body {
-        min-height: 100vh;
-        background: linear-gradient(to bottom, #1a237e, #3949ab);
-        padding: 2rem 0;
-      }
-      .search-container {
-        position: relative;
-      }
-      .voice-btn {
-        position: absolute;
-        right: 10px;
-        top: 50%;
-        transform: translateY(-50%);
-        background: none;
-        border: none;
-        color: #666;
-      }
-      .voice-btn:hover {
-        color: #333;
-      }
-      .listening {
-        animation: pulse 1.5s infinite;
-      }
-      @keyframes pulse {
-        0% { opacity: 1; }
-        50% { opacity: 0.5; }
-        100% { opacity: 1; }
-      }
-    </style>
   </head>
-
   <body>
-    <div class="container">
-      <h1 class="text-white text-center mb-4">
-        Find a Doctor
-      </h1>
+    <div class="container py-4">
+      <h1 class="mb-4">Doctor List</h1>
       
-      <div class="card shadow-lg mx-auto" style="max-width: 768px;">
-        <div class="card-body">
-          <div class="row mb-4">
-            <div class="col-md-6">
-              <div class="search-container">
-                <input 
-                  type="text" 
-                  id="searchInput"
-                  placeholder="Search doctors..."
-                  class="form-control"
-                >
-                <button class="voice-btn" id="voiceSearchBtn">
-                  <i class="bi bi-mic-fill"></i>
-                </button>
-              </div>
-            </div>
-            <div class="col-md-6">
-              <select id="filterSelect" class="form-select">
-                <option value="all">All Categories</option>
-                <option value="AMODOCTORNAME">Doctor Name</option>
-                <option value="DOCTORTYPE">Doctor Type</option>
-                <option value="MEDICINETYPE">Medicine Type</option>
-              </select>
-            </div>
-          </div>
-
-          <div id="doctorsList" class="d-flex flex-column gap-3">
-            <!-- Doctors will be rendered here -->
+      <div class="row mb-4">
+        <div class="col-md-6">
+          <div class="input-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search doctors...">
+            <button id="voiceSearchBtn" class="btn btn-outline-secondary">
+              <i class="bi bi-mic"></i>
+            </button>
           </div>
         </div>
+        <div class="col-md-6">
+          <select id="filterSelect" class="form-select">
+            <option value="all">Search All Fields</option>
+            <option value="AMODOCTORNAME">Doctor Name</option>
+            <option value="DOCTORTYPE">Doctor Type</option>
+            <option value="MEDICINETYPE">Medicine Type</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="doctorsList" class="row row-cols-1 row-cols-md-2 g-4">
+        <!-- Doctors will be rendered here -->
       </div>
     </div>
 
+    <!-- Add Lovable script before other scripts -->
+    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
     <script type="module">
       import { doctorsData } from '/src/data/doctors.js';
       
@@ -168,8 +124,5 @@
       // Initial render
       renderDoctors(doctors);
     </script>
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
   </body>
 </html>
