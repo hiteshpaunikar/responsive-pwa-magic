@@ -20,12 +20,13 @@
           </div>
         </div>
         <div class="col-md-6">
-          <select id="filterSelect" class="form-select">
+          <select id="filterSelect" class="form-select mb-2">
             <option value="all">Search All Fields</option>
             <option value="AMODOCTORNAME">Doctor Name</option>
             <option value="DOCTORTYPE">Doctor Type</option>
             <option value="MEDICINETYPE">Medicine Type</option>
           </select>
+          <div id="searchHint" class="text-muted small"></div>
         </div>
       </div>
 
@@ -131,6 +132,17 @@
         `).join('');
       }
 
+      function updateSearchHint(filterType) {
+        const hintElement = document.getElementById('searchHint');
+        const hints = {
+          'all': 'Search across all doctor information fields',
+          'AMODOCTORNAME': 'Enter doctor\'s name to search',
+          'DOCTORTYPE': 'Search by doctor type (e.g., AMO, BOTH)',
+          'MEDICINETYPE': 'Search by medicine type (e.g., ALLOPATHY)'
+        };
+        hintElement.textContent = hints[filterType] || '';
+      }
+
       function filterDoctors() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         const filterType = document.getElementById('filterSelect').value;
@@ -150,10 +162,14 @@
 
       // Event listeners
       document.getElementById('searchInput').addEventListener('input', filterDoctors);
-      document.getElementById('filterSelect').addEventListener('change', filterDoctors);
+      document.getElementById('filterSelect').addEventListener('change', (e) => {
+        updateSearchHint(e.target.value);
+        filterDoctors();
+      });
 
       // Initial fetch and render
       fetchDoctors();
+      updateSearchHint('all'); // Set initial hint
     </script>
   </body>
 </html>
