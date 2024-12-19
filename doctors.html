@@ -43,6 +43,7 @@
       
       let doctors = doctorsData.Doctor;
       let recognition = null;
+      let isListening = false;
 
       // Initialize speech recognition
       if ('webkitSpeechRecognition' in window) {
@@ -55,21 +56,41 @@
           const transcript = event.results[0][0].transcript;
           document.getElementById('searchInput').value = transcript;
           filterDoctors();
-          voiceSearchBtn.classList.remove('listening');
+          stopRecognition();
         };
 
         recognition.onerror = function(event) {
           console.error('Speech recognition error:', event.error);
-          voiceSearchBtn.classList.remove('listening');
+          stopRecognition();
         };
+
+        recognition.onend = function() {
+          stopRecognition();
+        };
+      }
+
+      function stopRecognition() {
+        isListening = false;
+        voiceSearchBtn.classList.remove('listening');
       }
 
       // Voice search button handler
       const voiceSearchBtn = document.getElementById('voiceSearchBtn');
       voiceSearchBtn.addEventListener('click', () => {
         if (recognition) {
-          recognition.start();
-          voiceSearchBtn.classList.add('listening');
+          if (!isListening) {
+            try {
+              recognition.start();
+              isListening = true;
+              voiceSearchBtn.classList.add('listening');
+            } catch (error) {
+              console.error('Speech recognition error:', error);
+              stopRecognition();
+            }
+          } else {
+            recognition.stop();
+            stopRecognition();
+          }
         } else {
           alert('Speech recognition is not supported in your browser.');
         }
