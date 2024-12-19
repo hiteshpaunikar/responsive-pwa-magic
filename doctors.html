@@ -39,11 +39,21 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     <script type="module">
-      import { doctorsData } from '/src/data/doctors.js';
-      
-      let doctors = doctorsData.Doctor;
+      let doctors = [];
       let recognition = null;
       let isListening = false;
+
+      // Fetch doctors data
+      async function fetchDoctors() {
+        try {
+          const response = await fetch('/src/data/doctor.json');
+          const data = await response.json();
+          doctors = data.Doctor;
+          renderDoctors(doctors);
+        } catch (error) {
+          console.error('Error loading doctors:', error);
+        }
+      }
 
       // Initialize speech recognition
       if ('webkitSpeechRecognition' in window) {
@@ -142,8 +152,8 @@
       document.getElementById('searchInput').addEventListener('input', filterDoctors);
       document.getElementById('filterSelect').addEventListener('change', filterDoctors);
 
-      // Initial render
-      renderDoctors(doctors);
+      // Initial fetch and render
+      fetchDoctors();
     </script>
   </body>
 </html>
