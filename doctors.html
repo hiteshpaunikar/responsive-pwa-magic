@@ -43,6 +43,7 @@
       let doctors = [];
       let recognition = null;
       let isListening = false;
+      let hintTimeout = null;
 
       // Fetch doctors data
       async function fetchDoctors() {
@@ -140,7 +141,19 @@
           'DOCTORTYPE': 'Search by doctor type (e.g., AMO, BOTH)',
           'MEDICINETYPE': 'Search by medicine type (e.g., ALLOPATHY)'
         };
+        
+        // Clear any existing timeout
+        if (hintTimeout) {
+          clearTimeout(hintTimeout);
+        }
+        
+        // Show the hint
         hintElement.textContent = hints[filterType] || '';
+        
+        // Set new timeout to clear the hint after 3 seconds
+        hintTimeout = setTimeout(() => {
+          hintElement.textContent = '';
+        }, 3000);
       }
 
       function filterDoctors() {
