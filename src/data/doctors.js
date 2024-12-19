@@ -1,0 +1,43 @@
+export const doctorsData = {
+   "version": "13",
+   "Doctor": [
+      {
+         "AMODOCTORCODE": "AM04",
+         "DOCTORTYPE": "AMO",
+         "PANNO": "-",
+         "AMODOCTORNAME": "DR. ASHISH JOSHI",
+         "MEDICINETYPE": "ALLOPATHY",
+         "AMOHOUSENO": "38 DARSHAN COMPLEX",
+         "AMOSTREET": "OPP PURUSHOTTAM  NAGAR STAND",
+         "AMOPLACE": "BOPAL AHMEDABAD",
+         "AMOPINCODE": "380058",
+         "AMOTIMINGS": "0900-1400, 1700-2100",
+         "CONSULTPLACE": "CLINIC",
+         "AMOPHONENO": "952717231363 (C) 239533 (R)",
+         "AMOAREANAME": "BOPAL AMBLI",
+         "MEDDISCIPLNAME": "GP (AMO)",
+         "ADDRESSTYPE": "CLNI1",
+         "GEOLOCATION": "23.033616, 72.465060",
+         "PRIMARYPHONE": "02717231363"
+      },
+      {
+         "AMODOCTORCODE": "H050",
+         "DOCTORTYPE": "BOTH",
+         "PANNO": "DR.TEJAS PATEL",
+         "AMODOCTORNAME": "TCVS (APEX HEART INS",
+         "MEDICINETYPE": "ALLOPATHY",
+         "AMOHOUSENO": "G-K ,MONDEAL BUSINESS PARK",
+         "AMOSTREET": "NEAR GURUDWARA,S.G.ROAD",
+         "AMOPLACE": "THALTEJ,AHMEDABAD",
+         "AMOPINCODE": "380054",
+         "AMOTIMINGS": "NRSNG HME APRVD WITH  BLD BANK",
+         "CONSULTPLACE": "CLINIC",
+         "AMOPHONENO": "26842220/22",
+         "AMOAREANAME": "THALTEJ",
+         "MEDDISCIPLNAME": "HOSPITAL",
+         "ADDRESSTYPE": "CLNI1",
+         "GEOLOCATION": "23.0458023,72.5129165",
+         "PRIMARYPHONE": "07926842220"
+      }
+   ]
+};
