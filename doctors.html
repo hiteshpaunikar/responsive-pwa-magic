@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Doctor List - ISRO SAC</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      .clickable {
+        cursor: pointer;
+        color: #0d6efd;
+        text-decoration: underline;
+      }
+    </style>
   </head>
   <body>
     <div class="container py-4">
@@ -35,17 +42,12 @@
       </div>
     </div>
 
-    <!-- Add Lovable script before other scripts -->
-    <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
     <script type="module">
       let doctors = [];
       let recognition = null;
       let isListening = false;
       let hintTimeout = null;
 
-      // Fetch doctors data
       async function fetchDoctors() {
         try {
           const response = await fetch('/src/data/doctor.json');
@@ -108,6 +110,20 @@
         }
       });
 
+      function openGoogleMaps(geolocation) {
+        if (!geolocation) return;
+        const [lat, lng] = geolocation.split(',').map(coord => coord.trim());
+        const mapsUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+        window.open(mapsUrl, '_blank');
+      }
+
+      function dialPhoneNumber(phoneNumber) {
+        if (!phoneNumber) return;
+        // Clean up the phone number - remove non-digit characters except +
+        const cleanNumber = phoneNumber.split('(')[0].trim();
+        window.location.href = `tel:${cleanNumber}`;
+      }
+
       function renderDoctors(doctorsToRender) {
         const doctorsList = document.getElementById('doctorsList');
         if (doctorsToRender.length === 0) {
@@ -126,7 +142,8 @@
               <p class="mb-1"><strong>Type:</strong> ${doctor.DOCTORTYPE || 'N/A'}</p>
               <p class="mb-1"><strong>Medicine:</strong> ${doctor.MEDICINETYPE || 'N/A'}</p>
               <p class="mb-1"><strong>Timings:</strong> ${doctor.AMOTIMINGS || 'N/A'}</p>
-              <p class="mb-1"><strong>Phone:</strong> ${doctor.AMOPHONENO || 'N/A'}</p>
+              <p class="mb-1"><strong>Phone:</strong> <span class="clickable" onclick="dialPhoneNumber('${doctor.AMOPHONENO || ''}')">${doctor.AMOPHONENO || 'N/A'}</span></p>
+              <p class="mb-1"><strong>Location:</strong> <span class="clickable" onclick="openGoogleMaps('${doctor.GEOLOCATION || ''}')">${doctor.GEOLOCATION || 'N/A'}</span></p>
               <p class="mb-0"><strong>Address:</strong> ${[doctor.AMOHOUSENO, doctor.AMOSTREET, doctor.AMOPLACE].filter(Boolean).join(', ') || 'N/A'}</p>
             </div>
           </div>
@@ -179,6 +196,10 @@
         updateSearchHint(e.target.value);
         filterDoctors();
       });
+
+      // Make functions available globally for onclick handlers
+      window.dialPhoneNumber = dialPhoneNumber;
+      window.openGoogleMaps = openGoogleMaps;
 
       // Initial fetch and render
       fetchDoctors();
