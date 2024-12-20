@@ -4,8 +4,11 @@ const urlsToCache = [
   '/index.html',
   '/manifest.json',
   '/src/main.tsx',
+  '/src/data/doctor.json',
   '/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png'
 ];
+
+let currentDoctorVersion = null;
 
 self.addEventListener('install', event => {
   event.waitUntil(
@@ -15,10 +18,43 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request)
-      .then(response => response || fetch(event.request))
-  );
+  if (event.request.url.includes('doctor.json')) {
+    event.respondWith(
+      fetch(event.request)
+        .then(async response => {
+          const clone = response.clone();
+          const data = await clone.json();
+          
+          // Check if version has changed
+          if (currentDoctorVersion === null) {
+            currentDoctorVersion = data.version;
+          } else if (currentDoctorVersion !== data.version) {
+            // Version changed, clear old cache
+            await caches.delete(CACHE_NAME);
+            currentDoctorVersion = data.version;
+            
+            // Create new cache with updated data
+            const cache = await caches.open(CACHE_NAME);
+            await cache.addAll(urlsToCache);
+          }
+          
+          // Update cache with new response
+          const cache = await caches.open(CACHE_NAME);
+          cache.put(event.request, response.clone());
+          
+          return response;
+        })
+        .catch(() => {
+          // If fetch fails, try to return from cache
+          return caches.match(event.request);
+        })
+    );
+  } else {
+    event.respondWith(
+      caches.match(event.request)
+        .then(response => response || fetch(event.request))
+    );
+  }
 });
 
 self.addEventListener('activate', event => {
