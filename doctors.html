@@ -132,8 +132,10 @@
       function updateDisciplineDropdown(doctorType) {
         const disciplineSelect = document.getElementById('disciplineSelect');
         if (doctorType === 'DOCTORTYPE') {
-          // Get unique disciplines
-          const disciplines = [...new Set(doctors.map(doctor => doctor.MEDDISCIPLNAME))];
+          // Get unique disciplines and sort them
+          const disciplines = [...new Set(doctors.map(doctor => doctor.MEDDISCIPLNAME))]
+            .sort((a, b) => a.localeCompare(b));
+          
           disciplineSelect.innerHTML = '<option value="">Select Discipline</option>' +
             disciplines.map(discipline => 
               `<option value="${discipline}">${discipline}</option>`
