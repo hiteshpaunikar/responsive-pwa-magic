@@ -11,6 +11,9 @@
         color: #0d6efd;
         text-decoration: underline;
       }
+      .hidden {
+        display: none;
+      }
     </style>
   </head>
   <body>
@@ -32,6 +35,9 @@
             <option value="AMODOCTORNAME">Doctor Name</option>
             <option value="DOCTORTYPE">Doctor Type</option>
             <option value="MEDICINETYPE">Medicine Type</option>
+          </select>
+          <select id="disciplineSelect" class="form-select mb-2 hidden">
+            <option value="">Select Discipline</option>
           </select>
           <div id="searchHint" class="text-muted small"></div>
         </div>
@@ -119,9 +125,24 @@
 
       function dialPhoneNumber(phoneNumber) {
         if (!phoneNumber) return;
-        // Clean up the phone number - remove non-digit characters except +
         const cleanNumber = phoneNumber.split('(')[0].trim();
         window.location.href = `tel:${cleanNumber}`;
+      }
+
+      function updateDisciplineDropdown(doctorType) {
+        const disciplineSelect = document.getElementById('disciplineSelect');
+        if (doctorType === 'DOCTORTYPE') {
+          // Get unique disciplines
+          const disciplines = [...new Set(doctors.map(doctor => doctor.MEDDISCIPLNAME))];
+          disciplineSelect.innerHTML = '<option value="">Select Discipline</option>' +
+            disciplines.map(discipline => 
+              `<option value="${discipline}">${discipline}</option>`
+            ).join('');
+          disciplineSelect.classList.remove('hidden');
+        } else {
+          disciplineSelect.classList.add('hidden');
+          disciplineSelect.value = '';
+        }
       }
 
       function renderDoctors(doctorsToRender) {
@@ -155,19 +176,16 @@
         const hints = {
           'all': 'Search across all doctor information fields',
           'AMODOCTORNAME': 'Enter doctor\'s name to search',
-          'DOCTORTYPE': 'Search by doctor type (e.g., AMO, BOTH)',
+          'DOCTORTYPE': 'Select doctor type and discipline',
           'MEDICINETYPE': 'Search by medicine type (e.g., ALLOPATHY)'
         };
         
-        // Clear any existing timeout
         if (hintTimeout) {
           clearTimeout(hintTimeout);
         }
         
-        // Show the hint
         hintElement.textContent = hints[filterType] || '';
         
-        // Set new timeout to clear the hint after 3 seconds
         hintTimeout = setTimeout(() => {
           hintElement.textContent = '';
         }, 3000);
@@ -176,16 +194,26 @@
       function filterDoctors() {
         const searchTerm = document.getElementById('searchInput').value.toLowerCase();
         const filterType = document.getElementById('filterSelect').value;
+        const selectedDiscipline = document.getElementById('disciplineSelect').value;
         
-        const filtered = doctors.filter(doctor => {
-          if (filterType === 'all') {
-            return Object.values(doctor).some(value => 
+        let filtered = doctors;
+
+        if (filterType === 'DOCTORTYPE' && selectedDiscipline) {
+          filtered = doctors.filter(doctor => 
+            doctor.MEDDISCIPLNAME === selectedDiscipline
+          );
+        } else if (filterType !== 'all') {
+          filtered = doctors.filter(doctor => 
+            doctor[filterType] && 
+            doctor[filterType].toLowerCase().includes(searchTerm)
+          );
+        } else {
+          filtered = doctors.filter(doctor => 
+            Object.values(doctor).some(value => 
               value && value.toLowerCase().includes(searchTerm)
-            );
-          }
-          return doctor[filterType] && 
-                 doctor[filterType].toLowerCase().includes(searchTerm);
-        });
+            )
+          );
+        }
         
         renderDoctors(filtered);
       }
@@ -194,8 +222,10 @@
       document.getElementById('searchInput').addEventListener('input', filterDoctors);
       document.getElementById('filterSelect').addEventListener('change', (e) => {
         updateSearchHint(e.target.value);
+        updateDisciplineDropdown(e.target.value);
         filterDoctors();
       });
+      document.getElementById('disciplineSelect').addEventListener('change', filterDoctors);
 
       // Make functions available globally for onclick handlers
       window.dialPhoneNumber = dialPhoneNumber;
@@ -203,7 +233,7 @@
 
       // Initial fetch and render
       fetchDoctors();
-      updateSearchHint('all'); // Set initial hint
+      updateSearchHint('all');
     </script>
   </body>
 </html>
