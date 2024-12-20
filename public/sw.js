@@ -29,16 +29,15 @@ self.addEventListener('fetch', event => {
           if (currentDoctorVersion === null) {
             currentDoctorVersion = data.version;
           } else if (currentDoctorVersion !== data.version) {
-            // Version changed, clear old cache
-            await caches.delete(CACHE_NAME);
+            // Version changed, only update doctor.json in cache
             currentDoctorVersion = data.version;
             
-            // Create new cache with updated data
+            // Get the cache and only remove doctor.json
             const cache = await caches.open(CACHE_NAME);
-            await cache.addAll(urlsToCache);
+            await cache.delete(event.request.url);
           }
           
-          // Update cache with new response
+          // Update cache with new doctor.json response
           const cache = await caches.open(CACHE_NAME);
           cache.put(event.request, response.clone());
           
