@@ -13,7 +13,13 @@ let currentDoctorVersion = null;
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
+      .catch(error => {
+        console.error('Failed to cache resources:', error);
+      })
   );
 });
 
@@ -32,40 +38,46 @@ self.addEventListener('fetch', event => {
             // Version changed, only update doctor.json in cache
             currentDoctorVersion = data.version;
             
-            // Get the cache and only remove doctor.json
             const cache = await caches.open(CACHE_NAME);
             await cache.delete(event.request.url);
+            await cache.put(event.request, response.clone());
           }
-          
-          // Update cache with new doctor.json response
-          const cache = await caches.open(CACHE_NAME);
-          cache.put(event.request, response.clone());
           
           return response;
         })
         .catch(() => {
-          // If fetch fails, try to return from cache
           return caches.match(event.request);
         })
     );
   } else {
     event.respondWith(
       caches.match(event.request)
-        .then(response => response || fetch(event.request))
+        .then(response => {
+          if (response) {
+            return response;
+          }
+          return fetch(event.request)
+            .then(response => {
+              // Check if we received a valid response
+              if (!response || response.status !== 200 || response.type !== 'basic') {
+                return response;
+              }
+
+              // Clone the response
+              const responseToCache = response.clone();
+
+              caches.open(CACHE_NAME)
+                .then(cache => {
+                  cache.put(event.request, responseToCache);
+                });
+
+              return response;
+            });
+        })
     );
   }
 });
 
 self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheName !== CACHE_NAME) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
+  console.log('Service Worker activated');
 });
