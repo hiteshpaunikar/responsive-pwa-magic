@@ -24,7 +24,10 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  if (event.request.url.includes('doctor.json')) {
+  const url = event.request.url;
+  
+  // First check if url exists and includes doctor.json
+  if (url && url.includes('doctor.json')) {
     event.respondWith(
       fetch(event.request)
         .then(async response => {
