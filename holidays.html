@@ -11,39 +11,122 @@
     <link rel="icon" type="image/png" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
     <link rel="apple-touch-icon" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <style>
       body {
         min-height: 100vh;
-        background: linear-gradient(to bottom, #1a237e, #3949ab);
+        background: linear-gradient(225deg, #FFE29F 0%, #FFA99F 48%, #FF719A 100%);
         padding: 2rem 0;
       }
       .card {
         background: rgba(255, 255, 255, 0.95);
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        backdrop-filter: blur(4px);
+        transition: transform 0.3s ease;
+      }
+      .card:hover {
+        transform: translateY(-5px);
       }
       .month-title {
-        color: #1a237e;
-        border-bottom: 2px solid #1a237e;
+        color: #FF719A;
+        border-bottom: 2px solid #FF719A;
         padding-bottom: 0.5rem;
         margin-bottom: 1rem;
+        font-weight: 600;
+        position: relative;
+      }
+      .month-title::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background: #FFE29F;
+        animation: slideRight 2s infinite;
+      }
+      @keyframes slideRight {
+        0% { width: 0; }
+        50% { width: 50px; }
+        100% { width: 0; }
+      }
+      .table {
+        border-collapse: separate;
+        border-spacing: 0 8px;
+      }
+      .table thead th {
+        border: none;
+        color: #FF719A;
+        font-weight: 600;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+      }
+      .table tbody tr {
+        background: rgba(255, 255, 255, 0.6);
+        border-radius: 8px;
+        transition: all 0.3s ease;
+      }
+      .table tbody tr:hover {
+        background: rgba(255, 255, 255, 0.9);
+        transform: scale(1.01);
+      }
+      .table td {
+        border: none;
+        padding: 12px;
+        vertical-align: middle;
+      }
+      .header-content {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 2rem;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+      }
+      .header-title {
+        font-size: 2.5rem;
+        font-weight: 700;
+        background: linear-gradient(90deg, #FF719A, #FFE29F);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom: 0.5rem;
+      }
+      .header-subtitle {
+        color: white;
+        font-size: 1.2rem;
+        opacity: 0.9;
+      }
+      .loading-spinner {
+        width: 50px;
+        height: 50px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #FF719A;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <header class="text-white text-center mb-4">
-        <h1 class="display-6">ISRO Space Applications Centre</h1>
-        <p class="lead">Holiday List 2024</p>
+      <header class="text-center mb-4">
+        <div class="header-content animate__animated animate__fadeIn">
+          <h1 class="header-title">ISRO Space Applications Centre</h1>
+          <p class="header-subtitle">Holiday List 2024</p>
+        </div>
       </header>
       
-      <div class="card shadow-lg mx-auto" style="max-width: 900px;">
+      <div class="card shadow-lg mx-auto animate__animated animate__fadeInUp" style="max-width: 900px;">
         <div class="card-body">
           <div id="holidayList">
-            <!-- Data will be inserted here by JavaScript -->
             <div class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
-              </div>
+              <div class="loading-spinner"></div>
             </div>
           </div>
         </div>
@@ -56,13 +139,9 @@
           const response = await fetch('/src/data/holidaylist.json');
           const data = await response.json();
           
-          // Process and display the holidays
           const holidayList = document.getElementById('holidayList');
-          
-          // Clear loading spinner
           holidayList.innerHTML = '';
           
-          // Group holidays by month
           const holidaysByMonth = data.holidays.reduce((acc, holiday) => {
             const date = new Date(holiday.date);
             const month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
@@ -74,10 +153,9 @@
             return acc;
           }, {});
 
-          // Create HTML for each month
-          Object.entries(holidaysByMonth).forEach(([month, holidays]) => {
+          Object.entries(holidaysByMonth).forEach(([month, holidays], index) => {
             const monthSection = document.createElement('div');
-            monthSection.className = 'mb-4';
+            monthSection.className = `mb-4 animate__animated animate__fadeIn animate__delay-${index}s`;
             monthSection.innerHTML = `
               <h3 class="month-title">${month}</h3>
               <div class="table-responsive">
@@ -111,7 +189,7 @@
         } catch (error) {
           const holidayList = document.getElementById('holidayList');
           holidayList.innerHTML = `
-            <div class="alert alert-danger" role="alert">
+            <div class="alert alert-danger animate__animated animate__shakeX" role="alert">
               Error loading holiday list. Please try again later.
             </div>
           `;
@@ -119,7 +197,6 @@
         }
       }
 
-      // Fetch holidays when page loads
       fetchHolidays();
     </script>
 
