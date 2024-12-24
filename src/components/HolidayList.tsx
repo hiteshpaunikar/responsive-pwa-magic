@@ -9,18 +9,22 @@ interface Holiday {
   type: string;
 }
 
+interface HolidayResponse {
+  holidays: Holiday[];
+}
+
 interface HolidaysByMonth {
   [key: string]: Holiday[];
 }
 
-const fetchHolidays = async () => {
+const fetchHolidays = async (): Promise<Holiday[]> => {
   const response = await fetch("/src/data/holidaylist.json");
-  const data = await response.json();
+  const data: HolidayResponse = await response.json();
   return data.holidays;
 };
 
 const HolidayList = () => {
-  const { data: holidays = [], isLoading, error } = useQuery({
+  const { data: holidays = [], isLoading, error } = useQuery<Holiday[]>({
     queryKey: ["holidays"],
     queryFn: fetchHolidays,
   });
