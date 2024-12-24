@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holiday List - ISRO SAC</title>
+    <meta name="description" content="Holiday List at ISRO Space Applications Centre" />
+    <meta name="author" content="ISRO SAC" />
+    <meta name="theme-color" content="#1a237e" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/png" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
+    <link rel="apple-touch-icon" href="/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #1a237e, #3949ab);
+        padding: 2rem 0;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.95);
+      }
+      .month-title {
+        color: #1a237e;
+        border-bottom: 2px solid #1a237e;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="text-white text-center mb-4">
+        <h1 class="display-6">ISRO Space Applications Centre</h1>
+        <p class="lead">Holiday List 2024</p>
+      </header>
+      
+      <div class="card shadow-lg mx-auto" style="max-width: 900px;">
+        <div class="card-body">
+          <div id="holidayList">
+            <!-- Data will be inserted here by JavaScript -->
+            <div class="text-center">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function fetchHolidays() {
+        try {
+          const response = await fetch('/src/data/holidaylist.json');
+          const data = await response.json();
+          
+          // Process and display the holidays
+          const holidayList = document.getElementById('holidayList');
+          
+          // Clear loading spinner
+          holidayList.innerHTML = '';
+          
+          // Group holidays by month
+          const holidaysByMonth = data.holidays.reduce((acc, holiday) => {
+            const date = new Date(holiday.date);
+            const month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            
+            if (!acc[month]) {
+              acc[month] = [];
+            }
+            acc[month].push(holiday);
+            return acc;
+          }, {});
+
+          // Create HTML for each month
+          Object.entries(holidaysByMonth).forEach(([month, holidays]) => {
+            const monthSection = document.createElement('div');
+            monthSection.className = 'mb-4';
+            monthSection.innerHTML = `
+              <h3 class="month-title">${month}</h3>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Holiday</th>
+                      <th>Type</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${holidays.map(holiday => `
+                      <tr>
+                        <td>${new Date(holiday.date).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        })}</td>
+                        <td>${holiday.name}</td>
+                        <td>${holiday.type}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+            holidayList.appendChild(monthSection);
+          });
+          
+        } catch (error) {
+          const holidayList = document.getElementById('holidayList');
+          holidayList.innerHTML = `
+            <div class="alert alert-danger" role="alert">
+              Error loading holiday list. Please try again later.
+            </div>
+          `;
+          console.error('Error fetching holidays:', error);
+        }
+      }
+
+      // Fetch holidays when page loads
+      fetchHolidays();
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(registration => {
+              console.log('ServiceWorker registration successful');
+            })
+            .catch(err => {
+              console.log('ServiceWorker registration failed: ', err);
+            });
+        });
+      }
+    </script>
+  </body>
+</html>
