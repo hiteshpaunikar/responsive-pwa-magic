@@ -14,25 +14,48 @@
     <style>
       body {
         min-height: 100vh;
-        background: linear-gradient(to bottom, #1a237e, #3949ab);
+        background: linear-gradient(to right, #d7d2cc 0%, #304352 100%);
         padding: 2rem 0;
+      }
+      .card {
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .card-title {
+        color: #1a237e;
+        font-weight: 600;
+        border-bottom: 2px solid #e0e0e0;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1rem;
+      }
+      .loading-spinner {
+        width: 3rem;
+        height: 3rem;
       }
     </style>
   </head>
 
   <body>
     <div class="container">
-      <h1 class="text-white text-center mb-4">
-        Doctors Data
-      </h1>
+      <div class="row justify-content-center mb-4">
+        <div class="col-12 col-md-8">
+          <h1 class="text-white text-center fw-bold">
+            Doctors Directory
+          </h1>
+          <p class="text-center text-white mb-0">Space Applications Centre, ISRO</p>
+        </div>
+      </div>
       
-      <div class="card shadow-lg mx-auto" style="max-width: 768px;">
-        <div class="card-body">
-          <div id="doctorsData" class="d-flex flex-column gap-3">
-            <!-- Data will be inserted here by JavaScript -->
-            <div class="text-center">
-              <div class="spinner-border text-primary" role="status">
-                <span class="visually-hidden">Loading...</span>
+      <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8">
+          <div class="card">
+            <div class="card-body">
+              <div id="doctorsData" class="d-flex flex-column gap-3">
+                <div class="text-center py-4">
+                  <div class="spinner-border loading-spinner text-primary" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -45,7 +68,6 @@
         const dataContainer = document.getElementById('doctorsData');
         
         try {
-          // Using local JSON data instead of XML for reliability
           const response = await fetch('/src/data/doctor.json');
           
           if (!response.ok) {
@@ -58,7 +80,8 @@
           if (!data || !data.Doctor || data.Doctor.length === 0) {
             dataContainer.innerHTML = `
               <div class="alert alert-info" role="alert">
-                No doctors data available at the moment.
+                <h5 class="alert-heading">No Data Available</h5>
+                <p class="mb-0">There are currently no doctors listed in the directory.</p>
               </div>
             `;
             return;
@@ -66,16 +89,22 @@
 
           data.Doctor.forEach(doctor => {
             const card = document.createElement('div');
-            card.className = 'card bg-light';
+            card.className = 'card bg-light mb-3';
             card.innerHTML = `
               <div class="card-body">
                 <h5 class="card-title">${doctor.AMODOCTORNAME || 'N/A'}</h5>
-                <p class="mb-1"><strong>Type:</strong> ${doctor.DOCTORTYPE || 'N/A'}</p>
-                <p class="mb-1"><strong>Medicine:</strong> ${doctor.MEDICINETYPE || 'N/A'}</p>
-                <p class="mb-1"><strong>Timings:</strong> ${doctor.AMOTIMINGS || 'N/A'}</p>
-                <p class="mb-1"><strong>Phone:</strong> ${doctor.AMOPHONENO || 'N/A'}</p>
-                <p class="mb-1"><strong>Area:</strong> ${doctor.AMOAREANAME || 'N/A'}</p>
-                <p class="mb-0"><strong>Address:</strong> ${[doctor.AMOHOUSENO, doctor.AMOSTREET, doctor.AMOPLACE].filter(Boolean).join(', ') || 'N/A'}</p>
+                <div class="row">
+                  <div class="col-md-6">
+                    <p class="mb-2"><strong>Specialization:</strong> ${doctor.DOCTORTYPE || 'N/A'}</p>
+                    <p class="mb-2"><strong>Medicine Type:</strong> ${doctor.MEDICINETYPE || 'N/A'}</p>
+                    <p class="mb-2"><strong>Timings:</strong> ${doctor.AMOTIMINGS || 'N/A'}</p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-2"><strong>Contact:</strong> ${doctor.AMOPHONENO || 'N/A'}</p>
+                    <p class="mb-2"><strong>Area:</strong> ${doctor.AMOAREANAME || 'N/A'}</p>
+                    <p class="mb-2"><strong>Address:</strong> ${[doctor.AMOHOUSENO, doctor.AMOSTREET, doctor.AMOPLACE].filter(Boolean).join(', ') || 'N/A'}</p>
+                  </div>
+                </div>
               </div>
             `;
             dataContainer.appendChild(card);
@@ -85,12 +114,12 @@
           console.error('Error fetching data:', error);
           dataContainer.innerHTML = `
             <div class="alert alert-danger" role="alert">
-              <h4 class="alert-heading">Error loading doctors data</h4>
-              <p>We're having trouble accessing the doctors information. Please try:</p>
+              <h4 class="alert-heading">Unable to Load Data</h4>
+              <p>We apologize for the inconvenience. Please verify:</p>
               <ul class="mb-0">
-                <li>Checking your internet connection</li>
-                <li>Refreshing the page</li>
-                <li>Trying again in a few minutes</li>
+                <li>Your internet connection is stable</li>
+                <li>Try refreshing the page</li>
+                <li>If the issue persists, please try again later</li>
               </ul>
             </div>
           `;
