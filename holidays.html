@@ -23,11 +23,22 @@
         border-radius: 8px;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
       }
+      .month-section {
+        margin-bottom: 2rem;
+      }
+      .month-title {
+        color: #333333;
+        border-bottom: 2px solid #7E69AB;
+        padding-bottom: 0.5rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+      }
       .table {
         border-collapse: separate;
         border-spacing: 0;
         width: 100%;
         table-layout: fixed;
+        margin-bottom: 0;
       }
       .table thead th {
         background: #F1F0FB;
@@ -127,32 +138,56 @@
           const data = await response.json();
           
           const holidayList = document.getElementById('holidayList');
-          holidayList.innerHTML = `
-            <div class="table-responsive">
-              <table class="table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Holiday</th>
-                    <th>Type</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${data.holidays.map(holiday => `
+          holidayList.innerHTML = '';
+          
+          // Group holidays by month
+          const holidaysByMonth = data.holidays.reduce((acc, holiday) => {
+            const date = new Date(holiday.date);
+            const month = date.toLocaleString('default', { month: 'long', year: 'numeric' });
+            if (!acc[month]) {
+              acc[month] = [];
+            }
+            acc[month].push(holiday);
+            return acc;
+          }, {});
+
+          // Create a container for all month sections
+          const monthsContainer = document.createElement('div');
+          
+          Object.entries(holidaysByMonth).forEach(([month, holidays]) => {
+            const monthSection = document.createElement('div');
+            monthSection.className = 'month-section';
+            monthSection.innerHTML = `
+              <h3 class="month-title">${month}</h3>
+              <div class="table-responsive">
+                <table class="table">
+                  <thead>
                     <tr>
-                      <td>${new Date(holiday.date).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric'
-                      })}</td>
-                      <td>${holiday.name}</td>
-                      <td>${holiday.type}</td>
+                      <th>Date</th>
+                      <th>Holiday</th>
+                      <th>Type</th>
                     </tr>
-                  `).join('')}
-                </tbody>
-              </table>
-            </div>
-          `;
+                  </thead>
+                  <tbody>
+                    ${holidays.map(holiday => `
+                      <tr>
+                        <td>${new Date(holiday.date).toLocaleDateString('en-IN', {
+                          day: '2-digit',
+                          month: 'short',
+                          year: 'numeric'
+                        })}</td>
+                        <td>${holiday.name}</td>
+                        <td>${holiday.type}</td>
+                      </tr>
+                    `).join('')}
+                  </tbody>
+                </table>
+              </div>
+            `;
+            monthsContainer.appendChild(monthSection);
+          });
+          
+          holidayList.appendChild(monthsContainer);
           
         } catch (error) {
           const holidayList = document.getElementById('holidayList');
