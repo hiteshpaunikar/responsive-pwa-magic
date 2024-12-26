@@ -13,10 +13,6 @@ interface HolidayResponse {
   holidays: Holiday[];
 }
 
-interface HolidaysByMonth {
-  [key: string]: Holiday[];
-}
-
 const fetchHolidays = async (): Promise<Holiday[]> => {
   const response = await fetch("/src/data/holidaylist.json");
   const data: HolidayResponse = await response.json();
@@ -37,15 +33,6 @@ const HolidayList = () => {
     return <div className="text-center text-red-500 p-4">Error loading holiday list</div>;
   }
 
-  const holidaysByMonth = holidays.reduce((acc: HolidaysByMonth, holiday: Holiday) => {
-    const month = format(parseISO(holiday.date), "MMMM yyyy");
-    if (!acc[month]) {
-      acc[month] = [];
-    }
-    acc[month].push(holiday);
-    return acc;
-  }, {});
-
   return (
     <div className="container mx-auto p-4 max-w-4xl">
       <Card className="mb-8">
@@ -55,29 +42,24 @@ const HolidayList = () => {
           </CardTitle>
         </CardHeader>
         <CardContent>
-          {Object.entries(holidaysByMonth).map(([month, monthHolidays]) => (
-            <div key={month} className="mb-6">
-              <h3 className="text-xl font-semibold mb-3 text-primary">{month}</h3>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Holiday</TableHead>
-                    <TableHead>Type</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {monthHolidays.map((holiday) => (
-                    <TableRow key={holiday.date}>
-                      <TableCell>{format(parseISO(holiday.date), "dd MMM yyyy")}</TableCell>
-                      <TableCell>{holiday.name}</TableCell>
-                      <TableCell>{holiday.type}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          ))}
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[25%]">Date</TableHead>
+                <TableHead className="w-[50%]">Holiday</TableHead>
+                <TableHead className="w-[25%]">Type</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {holidays.map((holiday) => (
+                <TableRow key={holiday.date}>
+                  <TableCell>{format(parseISO(holiday.date), "dd MMM yyyy")}</TableCell>
+                  <TableCell>{holiday.name}</TableCell>
+                  <TableCell>{holiday.type}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </CardContent>
       </Card>
     </div>
