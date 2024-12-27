@@ -39,7 +39,7 @@
             margin-top: 15px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
-        .back-button {
+        #backButton {
             display: none;
             margin-bottom: 20px;
         }
@@ -49,13 +49,13 @@
     <div class="container py-5">
         <h1 class="text-white mb-4">Supplementary Information</h1>
         
-        <button id="backButton" class="btn btn-light back-button mb-3">
+        <button id="backButton" class="btn btn-light mb-3">
             ← Back to Cards
         </button>
 
         <div class="row row-cols-1 row-cols-md-3 g-4" id="cardsContainer">
             <!-- NABH Hospital Card -->
-            <div class="col card-container" id="nabhContainer">
+            <div class="col" id="nabhCard">
                 <div class="card h-100" onclick="toggleInfo('nabh')">
                     <div class="card-body">
                         <h5 class="card-title">NABH Hospital</h5>
@@ -83,7 +83,7 @@
             </div>
 
             <!-- NON-NABH Hospital Card -->
-            <div class="col card-container" id="nonNabhContainer">
+            <div class="col" id="nonNabhCard">
                 <div class="card h-100" onclick="toggleInfo('non-nabh')">
                     <div class="card-body">
                         <h5 class="card-title">NON-NABH Hospital</h5>
@@ -111,7 +111,7 @@
             </div>
 
             <!-- Note Card -->
-            <div class="col card-container" id="noteContainer">
+            <div class="col" id="noteCard">
                 <div class="card h-100" onclick="toggleInfo('note')">
                     <div class="card-body">
                         <h5 class="card-title">Note</h5>
@@ -137,18 +137,25 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         function toggleInfo(type) {
-            const infoElement = document.getElementById(`${type}-info`);
             const backButton = document.getElementById('backButton');
-            const containers = document.getElementsByClassName('card-container');
+            const nabhCard = document.getElementById('nabhCard');
+            const nonNabhCard = document.getElementById('nonNabhCard');
+            const noteCard = document.getElementById('noteCard');
+            const infoElement = document.getElementById(`${type}-info`);
             
-            // Hide all containers except the clicked one
-            Array.from(containers).forEach(container => {
-                if (container.id !== `${type}Container`) {
-                    container.style.display = 'none';
-                }
-            });
+            // Hide all cards except the clicked one
+            if (type === 'nabh') {
+                nonNabhCard.style.display = 'none';
+                noteCard.style.display = 'none';
+            } else if (type === 'non-nabh') {
+                nabhCard.style.display = 'none';
+                noteCard.style.display = 'none';
+            } else if (type === 'note') {
+                nabhCard.style.display = 'none';
+                nonNabhCard.style.display = 'none';
+            }
             
-            // Show the selected info
+            // Show the selected info and back button
             if (infoElement) {
                 infoElement.style.display = 'block';
                 backButton.style.display = 'block';
@@ -156,17 +163,15 @@
         }
 
         document.getElementById('backButton').addEventListener('click', function() {
-            // Show all containers
-            const containers = document.getElementsByClassName('card-container');
-            Array.from(containers).forEach(container => {
-                container.style.display = 'block';
-            });
+            // Show all cards
+            document.getElementById('nabhCard').style.display = 'block';
+            document.getElementById('nonNabhCard').style.display = 'block';
+            document.getElementById('noteCard').style.display = 'block';
             
             // Hide all info sections
-            const infoElements = document.getElementsByClassName('hospital-info');
-            Array.from(infoElements).forEach(element => {
-                element.style.display = 'none';
-            });
+            document.getElementById('nabh-info').style.display = 'none';
+            document.getElementById('non-nabh-info').style.display = 'none';
+            document.getElementById('note-info').style.display = 'none';
             
             // Hide back button
             this.style.display = 'none';
