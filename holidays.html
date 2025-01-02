@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Holiday List - ISRO SAC</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+      body {
+        min-height: 100vh;
+        background: linear-gradient(to bottom, #1a237e, #3949ab);
+        color: #333;
+      }
+      .card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .table-responsive {
+        border-radius: 8px;
+        overflow: hidden;
+      }
+      .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+      }
+      .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.02);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-5">
+      <div class="card">
+        <div class="card-body">
+          <h2 class="card-title text-center mb-4">Holiday List 2024</h2>
+          <div id="loading" class="text-center py-4">
+            <div class="spinner-border text-primary" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+          <div id="error" class="alert alert-danger d-none" role="alert"></div>
+          <div id="holidayTable" class="table-responsive d-none">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Day</th>
+                  <th>Occasion</th>
+                </tr>
+              </thead>
+              <tbody id="holidayList"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      async function fetchHolidays() {
+        const loading = document.getElementById('loading');
+        const error = document.getElementById('error');
+        const holidayTable = document.getElementById('holidayTable');
+        const holidayList = document.getElementById('holidayList');
+
+        try {
+          const response = await fetch('/data/holidays.json');
+          if (!response.ok) {
+            throw new Error('Failed to fetch holiday data');
+          }
+          const data = await response.json();
+          
+          if (!data.holidays || !Array.isArray(data.holidays)) {
+            throw new Error('Invalid holiday data format');
+          }
+
+          // Clear existing content
+          holidayList.innerHTML = '';
+
+          // Add holiday rows
+          data.holidays.forEach(holiday => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+              <td>${holiday.date}</td>
+              <td>${holiday.day}</td>
+              <td>${holiday.occasion}</td>
+            `;
+            holidayList.appendChild(row);
+          });
+
+          // Show table, hide loading and error
+          loading.classList.add('d-none');
+          error.classList.add('d-none');
+          holidayTable.classList.remove('d-none');
+        } catch (err) {
+          // Show error, hide loading and table
+          error.textContent = err.message || 'An error occurred while fetching holiday data';
+          error.classList.remove('d-none');
+          loading.classList.add('d-none');
+          holidayTable.classList.add('d-none');
+        }
+      }
+
+      // Fetch holidays when page loads
+      document.addEventListener('DOMContentLoaded', fetchHolidays);
+    </script>
+  </body>
+</html>
