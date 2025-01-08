@@ -14,37 +14,56 @@
       .hidden {
         display: none;
       }
+      .loading-spinner {
+        width: 3rem;
+        height: 3rem;
+      }
     </style>
   </head>
   <body>
     <div class="container py-4">
       <h1 class="mb-4">Doctor List</h1>
       
-      <div class="row mb-4">
-        <div class="col-md-6">
-          <div class="input-group">
-            <input type="text" id="searchInput" class="form-control" placeholder="Search doctors...">
-            <button id="voiceSearchBtn" class="btn btn-outline-secondary">
-              <i class="bi bi-mic"></i>
-            </button>
+      <!-- Loading Spinner -->
+      <div id="loadingSpinner" class="text-center py-5">
+        <div class="spinner-border loading-spinner text-primary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+        <p class="mt-3">Loading doctor information...</p>
+      </div>
+      
+      <div id="mainContent" class="hidden">
+        <div class="row mb-4">
+          <div class="col-md-6">
+            <div class="input-group">
+              <input type="text" id="searchInput" class="form-control" placeholder="Search doctors...">
+              <button id="voiceSearchBtn" class="btn btn-outline-secondary">
+                <i class="bi bi-mic"></i>
+              </button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <select id="filterSelect" class="form-select mb-2">
+              <option value="all">Search All Fields</option>
+              <option value="AMODOCTORNAME">Doctor Name</option>
+              <option value="DOCTORTYPE">Doctor Type</option>
+              <option value="MEDICINETYPE">Medicine Type</option>
+            </select>
+            <select id="disciplineSelect" class="form-select mb-2 hidden">
+              <option value="">Select Discipline</option>
+            </select>
+            <div id="searchHint" class="text-muted small"></div>
           </div>
         </div>
-        <div class="col-md-6">
-          <select id="filterSelect" class="form-select mb-2">
-            <option value="all">Search All Fields</option>
-            <option value="AMODOCTORNAME">Doctor Name</option>
-            <option value="DOCTORTYPE">Doctor Type</option>
-            <option value="MEDICINETYPE">Medicine Type</option>
-          </select>
-          <select id="disciplineSelect" class="form-select mb-2 hidden">
-            <option value="">Select Discipline</option>
-          </select>
-          <div id="searchHint" class="text-muted small"></div>
+
+        <div id="doctorsList" class="row row-cols-1 row-cols-md-2 g-4">
+          <!-- Doctors will be rendered here -->
         </div>
       </div>
 
-      <div id="doctorsList" class="row row-cols-1 row-cols-md-2 g-4">
-        <!-- Doctors will be rendered here -->
+      <!-- Error Message -->
+      <div id="errorMessage" class="alert alert-danger hidden" role="alert">
+        Unable to load doctor information. Please try again later.
       </div>
     </div>
 
@@ -68,8 +87,16 @@
       let hintTimeout = null;
 
       async function fetchDoctors() {
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const mainContent = document.getElementById('mainContent');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Show loading spinner, hide main content and error message
+        loadingSpinner.classList.remove('hidden');
+        mainContent.classList.add('hidden');
+        errorMessage.classList.add('hidden');
+
         try {
-          // Add cache-busting timestamp parameter and no-cache headers
           const timestamp = new Date().getTime();
           const response = await fetch(`/src/data/doctor.json?t=${timestamp}`, {
             headers: {
@@ -85,9 +112,17 @@
           
           const data = await response.json();
           doctors = data.Doctor;
+          
+          // Hide loading spinner, show main content
+          loadingSpinner.classList.add('hidden');
+          mainContent.classList.remove('hidden');
+          
           renderDoctors(doctors);
         } catch (error) {
           console.error('Error loading doctors:', error);
+          // Hide loading spinner, show error message
+          loadingSpinner.classList.add('hidden');
+          errorMessage.classList.remove('hidden');
         }
       }
 
