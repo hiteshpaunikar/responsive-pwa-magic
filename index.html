@@ -173,76 +173,27 @@
 
     <!-- Add Lovable script before other scripts -->
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
+    <script src="/js/notification-helper.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-      // Service Worker Registration
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', async () => {
-          try {
-            const registration = await navigator.serviceWorker.register('/sw.js');
-            console.log('ServiceWorker registration successful');
-            initializeNotifications(registration);
-          } catch (err) {
-            console.log('ServiceWorker registration failed: ', err);
-          }
-        });
-      }
-
-      // Notification functionality
-      async function initializeNotifications(registration) {
-        const notificationBtn = document.getElementById('notificationBtn');
-        
-        if (!('Notification' in window)) {
-          notificationBtn.style.display = 'none';
-          return;
-        }
-
-        if (Notification.permission === 'granted') {
-          notificationBtn.textContent = 'Notifications Enabled';
-          notificationBtn.disabled = true;
-        }
-
-        notificationBtn.addEventListener('click', async () => {
-          try {
-            const permission = await Notification.requestPermission();
+      // Initialize notifications when the notification button is clicked
+      document.getElementById('notificationBtn').addEventListener('click', async () => {
+        try {
+          const permission = await Notification.requestPermission();
+          
+          if (permission === 'granted') {
+            const success = await initializePushNotifications();
             
-            if (permission === 'granted') {
+            if (success) {
+              const notificationBtn = document.getElementById('notificationBtn');
               notificationBtn.textContent = 'Notifications Enabled';
               notificationBtn.disabled = true;
-              
-              // Subscribe to push notifications
-              const subscribeOptions = {
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY')
-              };
-              
-              const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
-              console.log('Push Subscription:', pushSubscription);
-              
-              // Here you would typically send the pushSubscription to your server
-              // to store it for sending push notifications later
             }
-          } catch (error) {
-            console.error('Error enabling notifications:', error);
           }
-        });
-      }
-
-      // Helper function to convert VAPID key
-      function urlBase64ToUint8Array(base64String) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding)
-          .replace(/\-/g, '+')
-          .replace(/_/g, '/');
-
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-
-        for (let i = 0; i < rawData.length; ++i) {
-          outputArray[i] = rawData.charCodeAt(i);
+        } catch (error) {
+          console.error('Error setting up notifications:', error);
         }
-        return outputArray;
-      }
+      });
     </script>
   </body>
 </html>
