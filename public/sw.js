@@ -98,67 +98,25 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('push', (event) => {
-  let notificationData = {
-    title: 'ISRO SAC Update',
-    body: 'New update available',
+  const options = {
+    body: event.data.text(),
     icon: '/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png',
     badge: '/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png',
     vibrate: [100, 50, 100],
     data: {
       dateOfArrival: Date.now(),
-      primaryKey: 1,
-      url: self.registration.scope // Base URL of your app
+      primaryKey: 1
     }
   };
 
-  // Check if there's custom data in the push message
-  if (event.data) {
-    try {
-      const data = event.data.json();
-      notificationData = { ...notificationData, ...data };
-    } catch (e) {
-      notificationData.body = event.data.text();
-    }
-  }
-
-  const showNotificationPromise = self.registration.showNotification(
-    notificationData.title,
-    {
-      body: notificationData.body,
-      icon: notificationData.icon,
-      badge: notificationData.badge,
-      vibrate: notificationData.vibrate,
-      data: notificationData.data,
-      requireInteraction: true, // Notification will remain until user interacts
-      tag: 'isro-notification' // Tag to group notifications
-    }
+  event.waitUntil(
+    self.registration.showNotification('ISRO SAC Update', options)
   );
-
-  event.waitUntil(showNotificationPromise);
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-
-  // Get the notification data
-  const urlToOpen = event.notification.data?.url || '/';
-
-  // This ensures the app opens in the correct tab if it's already open
   event.waitUntil(
-    clients.matchAll({
-      type: 'window',
-      includeUncontrolled: true
-    }).then((windowClients) => {
-      // Check if there is already a window/tab open with the target URL
-      for (let client of windowClients) {
-        if (client.url === urlToOpen && 'focus' in client) {
-          return client.focus();
-        }
-      }
-      // If no window/tab is open, open one
-      if (clients.openWindow) {
-        return clients.openWindow(urlToOpen);
-      }
-    })
+    clients.openWindow('/')
   );
 });
