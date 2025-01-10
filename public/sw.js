@@ -96,3 +96,27 @@ self.addEventListener('activate', event => {
   );
   console.log('Service Worker activated');
 });
+
+self.addEventListener('push', (event) => {
+  const options = {
+    body: event.data.text(),
+    icon: '/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png',
+    badge: '/lovable-uploads/14c17238-81e6-4488-b71a-daad286afffa.png',
+    vibrate: [100, 50, 100],
+    data: {
+      dateOfArrival: Date.now(),
+      primaryKey: 1
+    }
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('ISRO SAC Update', options)
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  event.waitUntil(
+    clients.openWindow('/')
+  );
+});

@@ -37,6 +37,13 @@
       <h1 class="display-6 mb-1">Indian Space Research Organisation</h1>
       <h2 class="h4">Space Applications Centre</h2>
       <p class="small">Ahmedabad-380015</p>
+      
+      <!-- Notification permission button -->
+      <div id="notificationContainer" class="mt-3">
+        <button id="notificationBtn" class="btn btn-outline-light btn-sm">
+          Enable Notifications
+        </button>
+      </div>
     </header>
 
     <main class="container py-5">
@@ -168,16 +175,73 @@
     <script src="https://cdn.gpteng.co/gptengineer.js" type="module"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+      // Service Worker Registration
       if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js')
-            .then(registration => {
-              console.log('ServiceWorker registration successful');
-            })
-            .catch(err => {
-              console.log('ServiceWorker registration failed: ', err);
-            });
+        window.addEventListener('load', async () => {
+          try {
+            const registration = await navigator.serviceWorker.register('/sw.js');
+            console.log('ServiceWorker registration successful');
+            initializeNotifications(registration);
+          } catch (err) {
+            console.log('ServiceWorker registration failed: ', err);
+          }
         });
+      }
+
+      // Notification functionality
+      async function initializeNotifications(registration) {
+        const notificationBtn = document.getElementById('notificationBtn');
+        
+        if (!('Notification' in window)) {
+          notificationBtn.style.display = 'none';
+          return;
+        }
+
+        if (Notification.permission === 'granted') {
+          notificationBtn.textContent = 'Notifications Enabled';
+          notificationBtn.disabled = true;
+        }
+
+        notificationBtn.addEventListener('click', async () => {
+          try {
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+              notificationBtn.textContent = 'Notifications Enabled';
+              notificationBtn.disabled = true;
+              
+              // Subscribe to push notifications
+              const subscribeOptions = {
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY')
+              };
+              
+              const pushSubscription = await registration.pushManager.subscribe(subscribeOptions);
+              console.log('Push Subscription:', pushSubscription);
+              
+              // Here you would typically send the pushSubscription to your server
+              // to store it for sending push notifications later
+            }
+          } catch (error) {
+            console.error('Error enabling notifications:', error);
+          }
+        });
+      }
+
+      // Helper function to convert VAPID key
+      function urlBase64ToUint8Array(base64String) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding)
+          .replace(/\-/g, '+')
+          .replace(/_/g, '/');
+
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+
+        for (let i = 0; i < rawData.length; ++i) {
+          outputArray[i] = rawData.charCodeAt(i);
+        }
+        return outputArray;
       }
     </script>
   </body>
