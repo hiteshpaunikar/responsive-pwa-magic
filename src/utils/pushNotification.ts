@@ -36,6 +36,6 @@ export const createNotificationData = (title: string, body: string, url?: string
   data: {
     dateOfArrival: Date.now(),
     primaryKey: Math.random().toString(36).slice(2),
-    url: url || self.registration.scope
+    url: url || '/' // Default to root URL instead of using self.registration
   }
 });
